@@ -70,17 +70,18 @@ program
   .option('--title-line-spacing <number>', 'タイトル行間調整')
   .option('--tts <type>', 'TTSエンジン (google | openai)', 'google')
   .option('--debug', 'デバッグモード (途中経過ファイルの保存など)')
-  // ★追加: image-only オプション
   .option('--image-only', '画像生成のみを実行し、音声生成と動画結合をスキップする')
   .action(async (url, name, header, title, options) => {
     try {
       const timestamp = getFormattedDate();
       
       // === ディレクトリとパスの設定 ===
+      // 出力先: outputs/<NAME>
       const baseOutputDir = path.join(__dirname, 'outputs', name);
       
       let debugDir = null;
       if (options.debug) {
+        // デバッグディレクトリも outputs/<NAME>/debug_<日時> に作成
         debugDir = path.join(baseOutputDir, `debug_${timestamp}`);
         if (!fs.existsSync(baseOutputDir)) fs.mkdirSync(baseOutputDir, { recursive: true });
         if (!fs.existsSync(debugDir)) fs.mkdirSync(debugDir, { recursive: true });
@@ -92,9 +93,10 @@ program
       const imagePath = path.join(baseOutputDir, `screen-${timestamp}.png`);
       const videoPath = path.join(baseOutputDir, `video-${timestamp}.mp4`);
       
-      // 音声ファイルとテキストファイルの出力パス
-      const audioPath = path.join(baseOutputDir, `dub-${timestamp}.mp3`);
-      const textPath = path.join(baseOutputDir, `script-${timestamp}.txt`);
+      // ★修正: 音声ファイルとテキストファイルの出力パス
+      // 形式: outputs/<NAME>/<NAME>_<日時>.[mp3|txt]
+      const audioPath = path.join(baseOutputDir, `${name}_${timestamp}.mp3`);
+      const textPath = path.join(baseOutputDir, `${name}_${timestamp}.txt`);
 
       // === 背景画像のパス解決 ===
       const bgImagePath = path.resolve(process.cwd(), options.image);
@@ -114,7 +116,6 @@ program
       // =========================================================
       // Step 1: text-on-image (画像生成)
       // =========================================================
-      // image-onlyモードの場合はステップ表示を変更
       const step1Label = options.imageOnly ? '[1/1]' : '[1/3]';
       console.log(`\n${step1Label} 🖼️  タイトル画像を生成中 (text-on-image)...`);
       
@@ -129,10 +130,9 @@ program
       );
       console.log(`  ✅ 画像生成完了: ${path.basename(imagePath)}`);
 
-      // ★追加: image-only が指定されていたらここで終了
       if (options.imageOnly) {
         console.log(`\n✨ 画像生成のみ完了しました！`);
-        return; // 処理を終了
+        return;
       }
 
       // =========================================================
@@ -142,7 +142,9 @@ program
       
       const ttsType = options.tts || 'google';
 
-      let dubCmd = `blog-dub-ja "${url}" -o "${name}" --tts ${ttsType} --mp3-output "${audioPath}" --txt-output "${textPath}"`;
+      // ★修正: -m, -t, -d を使用するように変更
+      // 例: blog-dub-ja URL -m output.mp3 -t output.txt --tts google [-d debug_dir]
+      let dubCmd = `blog-dub-ja "${url}" -m "${audioPath}" -t "${textPath}" --tts ${ttsType}`;
       
       if (options.debug && debugDir) {
         dubCmd += ` -d "${debugDir}"`;
