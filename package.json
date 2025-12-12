@@ -1,0 +1,26 @@
+{
+  "name": "blog-to-video",
+  "version": "1.0.0",
+  "description": "ブログやニュースの記事を日本語の動画にする",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akiraak/blog-to-video.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akiraak/blog-to-video/issues"
+  },
+  "homepage": "https://github.com/akiraak/blog-to-video#readme",
+  "dependencies": {
+    "audio-to-video": "github:akiraak/audio-to-video",
+    "blog-dub-ja": "github:akiraak/blog-dub-ja",
+    "commander": "^14.0.2",
+    "text-on-image": "github:akiraak/text-on-image"
+  }
+}
