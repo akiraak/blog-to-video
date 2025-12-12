@@ -22,3 +22,5 @@ node index.js \
   -i background.png \
   --embed-thumb [THUMB-FILEPATH]
 ```
+
+[![日本語吹替: Spoorの鳥類モニタリング、関心が急上昇](http://img.youtube.com/vi/UkRe45Yaeok/0.jpg)](https://www.youtube.com/watch?v=UkRe45Yaeok)
